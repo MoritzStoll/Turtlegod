@@ -15,10 +15,9 @@ document.write('<script type="text/javascript" src="../../lib/cannon.js-0.6.2/bu
 document.write('<script type="text/javascript" src="../../lib/cannon.js-0.6.2/tools/threejs/CannonDebugRenderer.js"></script>');
 
 // Own modules
-//document.write('<script type="text/javascript" src="src/objects/Radio.js"></script>');
+document.write('<script type="text/javascript" src="src/objects/ArcadeAutomat.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/Floor.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/PillarFromFile.js"></script>');
-//document.write('<script type="text/javascript" src="src/objects/BowlFromFile.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/SpaceshipFromFile.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/Lights.js"></script>');
 document.write('<script type="text/javascript" src="src/animation/Animation.js"></script>');
@@ -38,7 +37,14 @@ const DEG_TO_RAD = Math.PI / 180;
 function main() {
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x000000);
+
+    var textureLoader = new THREE.TextureLoader();
+    textureLoader.load('https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg' , function(texture)
+            {
+             scene.background = texture;  
+            });
+
 
     physics = new Physics();
     physics.initialize(0, -200, 0, 1 / 120, true);
@@ -55,35 +61,32 @@ function main() {
     scene.add(directionalLight);
 
     //Objects in Scene
-    scene.add(new Floor(300,300, 10))
+    scene.add(new Floor(1000,1000, 1))
 
-    //Pillar
-    var pillar = new PillarFromFile();
-    pillar.position.x = -35;
-    pillar.position.y = 25;
-    pillar.scale.set(0.01, 0.01, 0.01);
-    scene.add(pillar)
-    //physics.addBox(pillar, 10, 40, 50, 45, 0, 0, 0);
-    //physics.addCylinder(pillar, 10, 25, 25, 50, 10, 0, 45, 0, -90 *DEG_TO_RAD, 0, 0);
-
-    
+    //ArcadeAutomat
+    var arcade = new ArcadeAutomat();
+    arcade.position.set(40,95/2,20);
+    arcade.rotation.y = -90 * DEG_TO_RAD;
+    arcade.castShadow = true;
+    physics.addBox(arcade, 20, 70,100,48, 0,5,0);
+    scene.add(arcade);
 
     //Spaceship --> Animate Floating
     var spaceship = new SpaceshipFromFile();
     spaceship.position.x = -35;
     spaceship.position.y = 80;
     spaceship.scale.set(2,2,2);
-    
+    physics.addBox(spaceship, 0.000000001, 55,15,35);
     scene.add(spaceship);
 
     //Camera
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 200, 150);
-    camera.lookAt(0, 83, 0);
+    camera.position.set(0, 150, 250);
+    camera.lookAt(0, 200, 0);
     camera.add(soundscape.getAudioListener());
 
     var orbitControls = new THREE.OrbitControls(camera);
-    orbitControls.target = new THREE.Vector3(0, 0, 0);
+    orbitControls.target = new THREE.Vector3(0, 80, 0);
     orbitControls.update();
 
     var gui = new dat.GUI();
