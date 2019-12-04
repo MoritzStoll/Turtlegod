@@ -6,7 +6,7 @@ document.write('<script type="text/javascript" src="../../lib/three.js-r109/exam
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/loaders/FBXLoader_r90.js"></script>');
 //Obj Loader
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/loaders/OBJLoader.js"></script>');
-//GLTF Loader
+//MTL Loader
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/loaders/MTLLoader.js"></script>');
 
 document.write('<script type="text/javascript" src="../../lib/dat.gui-0.7.6/build/dat.gui.js"></script>');
@@ -19,7 +19,7 @@ document.write('<script type="text/javascript" src="../../lib/cannon.js-0.6.2/to
 document.write('<script type="text/javascript" src="src/objects/Floor.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/PillarFromFile.js"></script>');
 //document.write('<script type="text/javascript" src="src/objects/BowlFromFile.js"></script>');
-document.write('<script type="text/javascript" src="src/objects/SeagullFromFile.js"></script>');
+document.write('<script type="text/javascript" src="src/objects/SpaceshipFromFile.js"></script>');
 document.write('<script type="text/javascript" src="src/objects/Lights.js"></script>');
 document.write('<script type="text/javascript" src="src/animation/Animation.js"></script>');
 document.write('<script type="text/javascript" src="src/animation/Tween.js"></script>');
@@ -61,21 +61,20 @@ function main() {
     var pillar = new PillarFromFile();
     pillar.position.x = -35;
     pillar.position.y = 25;
-    pillar.scale.set(3, 3, 3);
-    console.log(pillar);
+    pillar.scale.set(0.01, 0.01, 0.01);
     scene.add(pillar)
-    physics.addBox(pillar, 10, 40, 50, 45, 0, 0, 0);
-    //physics.addCylinder(pillar, 10, 15, 5, 10, 10, 0, 0, 0, -90 *DEG_TO_RAD, 0, 0);
+    //physics.addBox(pillar, 10, 40, 50, 45, 0, 0, 0);
+    //physics.addCylinder(pillar, 10, 25, 25, 50, 10, 0, 45, 0, -90 *DEG_TO_RAD, 0, 0);
 
     
 
-    //Seagull --> Animate Floating
-    var seagull = new SeagullFromFile();
-    seagull.position.x = -35;
-    seagull.position.y = 80;
-    seagull.scale.set(2,2,2);
+    //Spaceship --> Animate Floating
+    var spaceship = new SpaceshipFromFile();
+    spaceship.position.x = -35;
+    spaceship.position.y = 80;
+    spaceship.scale.set(2,2,2);
     
-    scene.add(seagull);
+    scene.add(spaceship);
 
     //Camera
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
