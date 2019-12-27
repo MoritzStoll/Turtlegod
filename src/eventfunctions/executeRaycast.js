@@ -5,56 +5,83 @@ function executeRaycast(event) {
     raycaster.setFromCamera(mousePosition, camera);
 
     var intersects = raycaster.intersectObjects(scene.children, true);
-
     if (intersects.length > 0) {
 
         var firstHit = intersects[0].object;
 
-        if (firstHit.name === "Einschalter" || firstHit.name === "Antenne") {
+        if (firstHit.name === "Volume") {
             firstHit.userData.toggleEndPosition();
+        } else if (firstHit.name === "Up" || firstHit.name === "Down" || firstHit.name === "Left" || firstHit.name === "Right") {
+            console.log(firstHit.name);
+            if (arcadeState.isFlying) {
 
-        } else if (firstHit.name === "Tuner") {
-            firstHit.userData.forward = !firstHit.userData.forward;
-            if (firstHit.userData.forward) {
-                firstHit.userData.backwardTween.stop();
-                firstHit.userData.forwardTween.start();
+
+                switch (firstHit.name) {
+                    case "Up":
+                        arcadeState.down = false;
+                        arcadeState.up = true;
+                        arcadeState.left = false;
+                        arcadeState.right = false;
+                     
+                        break;
+
+                    case "Down":
+                        arcadeState.down = true;
+                        arcadeState.up = false;
+                        arcadeState.left = false;
+                        arcadeState.right = false;
+                        break;
+
+                    case "Left":
+                        arcadeState.down = false;
+                        arcadeState.up = false;
+                        arcadeState.left = true;
+                        arcadeState.right = false;
+                     
+                        break;
+                    case "Right":
+                        arcadeState.down = false;
+                        arcadeState.up = false;
+                        arcadeState.left = false;
+                        arcadeState.right = true;
+                        break;
+                }
+            }
+
+            firstHit.userData.DownTween.start();
+            firstHit.userData.UpTween.stop();
+
+            setTimeout(() => {
+                firstHit.userData.UpTween.start();
+                firstHit.userData.DownTween.stop();
+            }, 400);
+
+
+        } else if (firstHit.name === "Handle" || firstHit.name === "HandleBall") {
+            if (firstHit.userData.up) {
+                firstHit.userData.DownTween.start();
+                firstHit.userData.UpTween.stop();
+                firstHit.userData.up = !firstHit.userData.up;
+                arcadeState.isFlying = !arcadeState.isFlying;
+                console.log("Land");
+                window.dispatchEvent(new Event("arcadeStateChanged"));
+
             } else {
-                firstHit.userData.forwardTween.stop();
-                firstHit.userData.backwardTween.start();
+                firstHit.userData.UpTween.start();
+                firstHit.userData.DownTween.stop();
+                firstHit.userData.up = !firstHit.userData.up;
+                console.log("Lift off");
+                arcadeState.isFlying = !arcadeState.isFlying;
+                arcadeState.down = false;
+                arcadeState.up = false;
+                arcadeState.left = false;
+                arcadeState.right = false;
+                //window.spaceship.userData.toggleEndPosition();
+                window.dispatchEvent(new Event("arcadeStateChanged"));
             }
         }
 
-        if (firstHit.name === "EinschalterFBX") {
-            radioState.powerOn = !radioState.powerOn;
 
-            if (radioState.powerOn && !radioAnimationMixer.existingAction("Einschalter_Action_aus").isRunning()) {
-                radioAnimationMixer.existingAction("Einschalter_Action_aus").stop();
-                radioAnimationMixer.existingAction("Einschalter_Action_ein").play();
-            } else if (!radioState.powerOn && !radioAnimationMixer.existingAction("Einschalter_Action_ein").isRunning()) {
-                radioAnimationMixer.existingAction("Einschalter_Action_ein").stop();
-                radioAnimationMixer.existingAction("Einschalter_Action_aus").play();
-            }
-        } else if (firstHit.name === "AntenneFBX") {
-            radioState.antennaOut = !radioState.antennaOut;
-            if (radioState.antennaOut && !radioAnimationMixer.existingAction("Antenne_Action_einfahren").isRunning()) {
-                radioAnimationMixer.existingAction("Antenne_Action_einfahren").stop();
-                radioAnimationMixer.existingAction("Antenne_Action_ausfahren").play();
-            } else if (!radioState.antennaOut && !radioAnimationMixer.existingAction("Antenne_Action_ausfahren").isRunning()) {
-                radioAnimationMixer.existingAction("Antenne_Action_ausfahren").stop();
-                radioAnimationMixer.existingAction("Antenne_Action_einfahren").play();
-            }
-        } else if (firstHit.name === "TunerFBX") {
-            radioState.markerRight = !radioState.markerRight;
-            if (radioState.markerRight && !radioAnimationMixer.existingAction("Marker_Action_zurueck").isRunning()) {
-                radioAnimationMixer.existingAction("Marker_Action_zurueck").stop();
-                radioAnimationMixer.existingAction("Marker_Action_vor").play();
-            } else if (!radioState.markerRight && !radioAnimationMixer.existingAction("Marker_Action_vor").isRunning()) {
-                radioAnimationMixer.existingAction("Marker_Action_vor").stop();
-                radioAnimationMixer.existingAction("Marker_Action_zurueck").play();
-            }
-        } else if (firstHit.name === "VolumeFBX") {
-            radioState.volumeHigh = !radioState.volumeHigh;
-            window.dispatchEvent(new Event("radioStateChanged"));
-        }
+
     }
 }

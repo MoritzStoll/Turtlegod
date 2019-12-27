@@ -1,7 +1,19 @@
+//needs to be global
+arcadeState = {
+    isFlying: false,
+    up: false,
+    down: false,
+    left: false,
+    right: false
+}
+
 class ArcadeAutomat extends THREE.Group {
     constructor() {
         super();
+        this.animations = new Array();
         this.addParts();
+        
+        
 
     }
     addParts() {
@@ -22,63 +34,119 @@ class ArcadeAutomat extends THREE.Group {
         blendeMesh.castShadow = true;
         leftControls.position.set(20, 20, 8);
         leftControls.add(blendeMesh);
+        
 
         var buttons = new THREE.Group();
-
-        //Button Up
+        
         var buttonMaterial = new THREE.MeshLambertMaterial({
             color: 0xE05353
         });
+        //Button Up
         var buttonUpGeometry = new THREE.CylinderGeometry(2, 2, 3, 10, 1, false);
-
         var buttonUpMesh = new THREE.Mesh(buttonUpGeometry, buttonMaterial);
-        buttons.add(buttonUpMesh);
+        leftControls.add(buttonUpMesh);
         buttonUpMesh.position.set(-4, 3, 0);
         buttonUpMesh.castShadow = true;
-
+        buttonUpMesh.name = "Up";
         //ButtonDown
-    
         var buttonDownGeometry = new THREE.CylinderGeometry(2, 2, 3, 10, 1, false);
-
         var buttonDownMesh = new THREE.Mesh(buttonDownGeometry, buttonMaterial);
-        buttons.add(buttonDownMesh);
+        leftControls.add(buttonDownMesh);
         buttonDownMesh.position.set(4, 3, 0);
         buttonDownMesh.castShadow = true;
+        buttonDownMesh.name = "Down";
         //buttonLeft
-
         var buttonLeftGeometry = new THREE.CylinderGeometry(2, 2, 3, 10, 1, false);
-
         var buttonLeftMesh = new THREE.Mesh(buttonLeftGeometry, buttonMaterial);
         buttons.add(buttonLeftMesh);
         buttonLeftMesh.position.set(0, 3, 4);
         buttonLeftMesh.castShadow = true;
+        buttonLeftMesh.name = "Left";
         //buttonRight
-     
         var buttonRightGeometry = new THREE.CylinderGeometry(2, 2, 3, 10, 1, false);
-
         var buttonRightMesh = new THREE.Mesh(buttonRightGeometry, buttonMaterial);
         buttons.add(buttonRightMesh);
         buttonRightMesh.position.set(0, 3, -4);
         buttonRightMesh.castShadow = true;
+        buttonRightMesh.name = "Right"
+        
+        //ADD Tweens to buttons
+        var speed = 400;
+        var buttonUpTweens = {
+            up: true,
+            UpTween: new TWEEN.Tween(buttonUpMesh.position).to(new THREE.Vector3(buttonUpMesh.position.x,
+                buttonUpMesh.position.y, buttonUpMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
+            DownTween: new TWEEN.Tween(buttonUpMesh.position).to(new THREE.Vector3(buttonUpMesh.position.x,
+                    buttonUpMesh.position.y-1.2, buttonUpMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+        }
+        buttonUpMesh.userData = buttonUpTweens;
+
+        var buttonDownTweens = {
+            up: true,
+            UpTween: new TWEEN.Tween(buttonDownMesh.position).to(new THREE.Vector3(buttonDownMesh.position.x,
+                buttonDownMesh.position.y, buttonDownMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
+            DownTween: new TWEEN.Tween(buttonDownMesh.position).to(new THREE.Vector3(buttonDownMesh.position.x,
+                    buttonDownMesh.position.y-1.2, buttonDownMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+        }
+        buttonDownMesh.userData = buttonDownTweens;
+        
+        var buttonLeftTweens = {
+            up: true,
+            UpTween: new TWEEN.Tween(buttonLeftMesh.position).to(new THREE.Vector3(buttonLeftMesh.position.x,
+                buttonLeftMesh.position.y, buttonLeftMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
+            DownTween: new TWEEN.Tween(buttonLeftMesh.position).to(new THREE.Vector3(buttonLeftMesh.position.x,
+                    buttonLeftMesh.position.y-1.2, buttonLeftMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+        }
+        buttonLeftMesh.userData = buttonLeftTweens;
+        
+        var buttonRightTweens = {
+            up: true,
+            UpTween: new TWEEN.Tween(buttonRightMesh.position).to(new THREE.Vector3(buttonRightMesh.position.x,
+                buttonRightMesh.position.y, buttonRightMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
+            DownTween: new TWEEN.Tween(buttonRightMesh.position).to(new THREE.Vector3(buttonRightMesh.position.x,
+                    buttonRightMesh.position.y-1.2, buttonRightMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+        }
+        buttonRightMesh.userData = buttonRightTweens;
+        
+
+        
         //HandleWrapper
         var handleWrapper = new THREE.Group();
+        var handle = new THREE.Object3D();
         var handleMaterial = new THREE.MeshLambertMaterial({
             color: 0x383838            
         });
         var handleGeometry = new THREE.CylinderGeometry(1.5,1.5,20,10,1,false);
-        var handleMesh = new THREE.Mesh(handleGeometry, handleMaterial);
-        handleMesh.position.y = 0;
-        handleMesh.castShadow = true;
-        handleWrapper.position.set(20, 20, -15);
-        handleWrapper.add(handleMesh);
 
+
+
+        var handleMesh = new THREE.Mesh(handleGeometry, handleMaterial);
+        handleMesh.name = "Handle";
+        handleMesh.position.y = -10;
+        handleMesh.castShadow = true;
+        //handleWrapper.position.set(20, 20, -15);
+        handleWrapper.position.set(0, 20, 0);
+        handle.position.set(20,10,-15);
+        handleWrapper.add(handleMesh);
+        handle.rotation.z = -20*DEG_TO_RAD;
         //Kugel
         var sphereGeometry = new THREE.SphereGeometry(3, 16, 16);
         var sphereMesh = new THREE.Mesh(sphereGeometry, buttonMaterial);
-        sphereMesh.position.y = 10;
+        sphereMesh.position.y = 0;
         handleWrapper.add(sphereMesh);
         sphereMesh.castShadow = true;
+        sphereMesh.name = "HandleBall";
+        handle.add(handleWrapper);
 
+        var handleTweens = {
+            up: false,
+            UpTween: new TWEEN.Tween(handle.rotation).to(new THREE.Vector3(handle.rotation.x,
+                handle.rotation.y, 20*DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out),
+            DownTween: new TWEEN.Tween(handle.rotation).to(new THREE.Vector3(handle.rotation.x,
+                    handle.rotation.y, -20*DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out)
+        }
+        handleMesh.userData = handleTweens;
+        sphereMesh.userData = handleTweens;
 
         //Volume
         var volumeMaterial = new THREE.MeshLambertMaterial({
@@ -90,9 +158,20 @@ class ArcadeAutomat extends THREE.Group {
         leftControls.add(volumeMesh);
         volumeMesh.position.z = -15;
         volumeMesh.castShadow = true;
+        volumeMesh.name = "Volume";
+
+        //Animation Right
+        var volumeAnimation = new Animation(volumeMesh, AnimationType.TRANSLATION, AnimationAxis.Y);
+        volumeAnimation.setAmount(-0.7);
+        volumeAnimation.setSpeed(2);
+        volumeMesh.userData = volumeAnimation;
+        this.animations.push(volumeAnimation);
+
+
+
 
         leftControls.add(buttons);
-        this.add(handleWrapper);
+        this.add(handle);
         this.add(leftControls);
 
 
@@ -132,9 +211,6 @@ class ArcadeAutomat extends THREE.Group {
         var topMesh = new THREE.Mesh(topGeometry, sideMaterial);
         topMesh.position.set(-15,50,0);
         this.add(topMesh);
-
-
-
         var sideleftShape = new THREE.Shape();
         sideleftShape.moveTo(-35, -45);
         sideleftShape.lineTo(-35, 50);

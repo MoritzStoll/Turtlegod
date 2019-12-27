@@ -2,6 +2,8 @@
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/build/three.js"></script>');
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/controls/OrbitControls.js"></script>');
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/libs/inflate.min.js"></script>');
+document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/libs/stats.min.js"></script>');
+
 //FBX Loader
 document.write('<script type="text/javascript" src="../../lib/three.js-r109/examples/js/loaders/FBXLoader_r90.js"></script>');
 //Obj Loader
@@ -30,25 +32,26 @@ document.write('<script type="text/javascript" src="src/eventfunctions/updateAsp
 document.write('<script type="text/javascript" src="src/eventfunctions/calculateMousePosition.js"></script>');
 document.write('<script type="text/javascript" src="src/eventfunctions/executeRaycast.js"></script>');
 document.write('<script type="text/javascript" src="src/eventfunctions/executeKeyAction.js"></script>');
-document.write('<script type="text/javascript" src="src/eventfunctions/setRadioSound.js"></script>');
+document.write('<script type="text/javascript" src="src/eventfunctions/setSpaceShipState.js"></script>');
 
 const DEG_TO_RAD = Math.PI / 180;
 
 function main() {
+    debug = false; 
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
 
     var textureLoader = new THREE.TextureLoader();
-    textureLoader.load('https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg' , function(texture)
-            {
-             scene.background = texture;  
-            });
+    textureLoader.load('https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg', function (texture) {
+        scene.background = texture;
+    });
 
 
     physics = new Physics();
     physics.initialize(0, -200, 0, 1 / 120, true);
     physicsVisualDebugger = new THREE.CannonDebugRenderer(scene, physics.getWorld());
+
 
     soundscape = new Soundscape();
 
@@ -61,22 +64,24 @@ function main() {
     scene.add(directionalLight);
 
     //Objects in Scene
-    scene.add(new Floor(1000,1000, 1))
+    scene.add(new Floor(1000, 1000, 1))
 
     //ArcadeAutomat
     var arcade = new ArcadeAutomat();
-    arcade.position.set(40,95/2,20);
+    arcade.position.set(40, 95 / 2, 20);
     arcade.rotation.y = -90 * DEG_TO_RAD;
     arcade.castShadow = true;
-    physics.addBox(arcade, 20, 70,100,48, 0,5,0);
+    physics.addBox(arcade, 20, 70, 100, 48, 0, 5, 0);
     scene.add(arcade);
 
+
     //Spaceship --> Animate Floating
-    var spaceship = new SpaceshipFromFile();
+    window.spaceship = new SpaceshipFromFile();
     spaceship.position.x = -35;
-    spaceship.position.y = 80;
-    spaceship.scale.set(2,2,2);
-    physics.addBox(spaceship, 0.000000001, 55,15,35);
+    spaceship.position.y = 40;
+    spaceship.scale.set(0.1, 0.1, 0.1);
+    spaceship.name = "Ebon Hawk";
+    //physics.addSphere(spaceship, 0.2, 15, 400);
     scene.add(spaceship);
 
     //Camera
@@ -93,6 +98,7 @@ function main() {
     gui.add(directionalLight.position, "x", -200, 200);
     gui.add(directionalLight.position, "y", -200, 200);
     gui.add(directionalLight.position, "z", -200, 200);
+
     gui.domElement.onmouseenter = function () {
         orbitControls.enabled = false;
     };
@@ -100,7 +106,14 @@ function main() {
         orbitControls.enabled = true;
     };
 
-    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+
+    var stats = new Stats();
+    stats.showPanel(0);
+    document.body.appendChild(stats.dom);
+    
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x000000));
     renderer.shadowMap.enabled = true;
@@ -111,16 +124,29 @@ function main() {
 
     function mainLoop() {
 
+        stats.begin();
         var delta = clock.getDelta();
 
         physics.update(delta);
-        physicsVisualDebugger.update();
-
+        
+        if (debug) {    
+            physicsVisualDebugger.update();
+        }
         TWEEN.update();
+        arcade.animations.forEach((animation) => {
+            animation.update(delta)
+        });
+        window.spaceship.animations.forEach((animation) => {
+            animation.update(delta)
+        });
 
-    
-
+        //This function moves the ship
+        if (arcadeState.isFlying) {        
+            spaceship.move(arcadeState.isFlying, arcadeState.up, arcadeState.down, arcadeState.right, arcadeState.left);
+        }
         renderer.render(scene, camera);
+
+        stats.end();
         requestAnimationFrame(mainLoop);
     }
 
@@ -131,6 +157,9 @@ function main() {
     window.onclick = executeRaycast;
     window.onkeydown = keyDownAction;
     window.onkeyup = keyUpAction;
+
+    window.addEventListener("arcadeStateChanged", setSpaceShipState);
+    window.dispatchEvent(new Event("arcadeStateChanged"));
 
 
 }

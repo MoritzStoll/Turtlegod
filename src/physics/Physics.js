@@ -42,11 +42,27 @@ class Physics {
         for (var i = 0; i < this.visualObjects.length; i++) {
             this.visualObjects[i].position.copy(this.physicalBodies[i].position);
             this.visualObjects[i].quaternion.copy(this.physicalBodies[i].quaternion);
+             
         }
     }
 
     getWorld() {
         return this.world;
+    }
+
+    removeBody(visualObject) {
+        console.log(visualObject.name);
+        var body = this.physicalBodies[this.visualObjects.indexOf(visualObject)]
+        this.world.remove(body);
+        console.log(this.physicalBodies.indexOf(body),this.visualObjects.indexOf(visualObject))
+
+        this.physicalBodies.splice(this.physicalBodies.indexOf(body));
+        this.visualObjects.splice(this.visualObjects.indexOf(visualObject));
+    }
+    getBody(visualObject) {
+        var body = this.physicalBodies[this.visualObjects.indexOf(visualObject)]
+        console.log(body);
+        return body;
     }
 
     addBox(visualObject, mass, dimX, dimY, dimZ, offsetX = 0, offsetY = 0, offsetZ = 0) {
@@ -78,6 +94,19 @@ class Physics {
         var body = new CANNON.Body({mass: mass});
         body.addShape(new CANNON.Cylinder(upperRadius, lowerRadius, height, segments), translation, rotation);
 
+        body.position.copy(visualObject.position);
+        body.quaternion.copy(visualObject.quaternion);
+
+        this.world.addBody(body);
+
+        this.addPair(visualObject, body);
+    }
+
+    addSphere(visualObject, mass, radius) {
+        var body = new CANNON.Body({
+            shape: new CANNON.Sphere(radius),
+            mass: mass
+        });
         body.position.copy(visualObject.position);
         body.quaternion.copy(visualObject.quaternion);
 

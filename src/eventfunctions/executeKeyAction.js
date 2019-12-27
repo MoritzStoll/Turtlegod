@@ -1,5 +1,5 @@
 var spaceDown = false;
-
+var dDown = false;
 function keyDownAction(event) {
     switch (event.keyCode) {
         case 32:
@@ -22,6 +22,13 @@ function keyDownAction(event) {
                 physics.addSphereWithVelocity(ball, 1, ballRadius, velocityVectorWC);
             }
             break;
+    case 68:
+        if (!dDown) {
+            console.log("Debug: " + debug);
+            dDown = true;
+            debug = !debug;
+        }
+        break;
     }
 }
 
@@ -29,6 +36,9 @@ function keyUpAction(event) {
     switch (event.keyCode) {
         case 32:
             spaceDown = false;
+            break;
+        case 68:
+            dDown = false;
             break;
     }
 }
