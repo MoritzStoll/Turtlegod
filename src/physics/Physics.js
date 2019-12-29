@@ -59,9 +59,9 @@ class Physics {
         this.physicalBodies.splice(this.physicalBodies.indexOf(body));
         this.visualObjects.splice(this.visualObjects.indexOf(visualObject));
     }
+    
     getBody(visualObject) {
         var body = this.physicalBodies[this.visualObjects.indexOf(visualObject)]
-        console.log(body);
         return body;
     }
 

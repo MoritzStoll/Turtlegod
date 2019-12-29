@@ -53,6 +53,7 @@ function main() {
     physicsVisualDebugger = new THREE.CannonDebugRenderer(scene, physics.getWorld());
 
 
+    //Add Sound
     soundscape = new Soundscape();
 
     var axes = new THREE.AxesHelper(20);
@@ -64,7 +65,7 @@ function main() {
     scene.add(directionalLight);
 
     //Objects in Scene
-    scene.add(new Floor(1000, 1000, 1))
+    scene.add(new Floor(300, 300, 1))
 
     //ArcadeAutomat
     var arcade = new ArcadeAutomat();
@@ -79,10 +80,13 @@ function main() {
     window.spaceship = new SpaceshipFromFile();
     spaceship.position.x = -35;
     spaceship.position.y = 40;
-    spaceship.scale.set(0.1, 0.1, 0.1);
+    spaceship.scale.set(0.05, 0.05, 0.05);
     spaceship.name = "Ebon Hawk";
-    //physics.addSphere(spaceship, 0.2, 15, 400);
+    physics.addSphere(spaceship, 0.5, 25);
     scene.add(spaceship);
+
+    soundscape.addSound("src/sound/files/Music.mp3");
+
 
     //Camera
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);

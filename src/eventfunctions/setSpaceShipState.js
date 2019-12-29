@@ -1,10 +1,12 @@
 function setSpaceShipState() {
-    //remove physical body
+
+    soundscape.getSounds()["src/sound/files/Music.mp3"].pause();
+    //Change Fly Mode (Mass of Spaceship)
     if (arcadeState.isFlying) {
-        //physics.removeBody(spaceship);
-        console.log(physics.physicalBodies)
-        console.log(physics.visualObjects);
+        spaceship.changeFlyMode(true);
+        soundscape.getSounds()["src/sound/files/Music.mp3"].setVolume(1.0);
+        soundscape.getSounds()["src/sound/files/Music.mp3"].play();
     } else {
-       //physics.addSphere(spaceship, 290, 35);
+        spaceship.changeFlyMode(false);
     }
 }

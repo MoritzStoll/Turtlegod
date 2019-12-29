@@ -51,34 +51,40 @@ class SpaceshipFromFile extends THREE.Group {
         return spaceshipAnimation;        
     }*/
 
+    changeFlyMode(fly) {
+        if (fly) {
+            physics.getBody(this).mass = 0;
+            physics.getBody(this).rotation = 0;
+            
+            
+        } else {
+            physics.getBody(this).mass = 10;
+        }
+    }
     move (isFlying = false, up = false, down = false, right = false, left = false) {
         if (isFlying) {
-            //console.log("isFlying: " + isFlying)
-            /*if (physics.getBody(this).position.y <= 80) {
-                physics.getBody(this).position.y += 0.5;
-                
-            }*/
-            if (this.position.y <= 80) {
-                this.position.y += 0.5;
+            var body = physics.getBody(this);
+            //body.velocity.set(0,0,0);
+            if (body.position.y <= 80) {
+                body.position.y += 0.5;
             }
 
             if (up && !down) {
-                this.position.z -= 0.3;
+                body.position.z -= 0.3;
             } else if (down && !up){
-                this.position.z += 0.3;
+                body.position.z += 0.3;
             }
     
             if (left && !right) {
-                this.position.x -= 0.3;
+                body.position.x -= 0.3;
             } else if (right && !left) {
-                this.position.x += 0.3;
+                body.position.x += 0.3;
             }
 
             //console.log("UP: " + up, "Down: " + down, "Left: " + left + "Right: " + right);
         } else {
-            if (this.position.y >= 10) {
-                this.position.y -= 0.5
-            }
+            console.log("Landing")
+            
         }
 
     }

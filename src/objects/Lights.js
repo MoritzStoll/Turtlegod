@@ -34,12 +34,12 @@ class Lights {
         directionaLight.intensity = 0.7;
         directionaLight.castShadow = true;
         directionaLight.shadow.radius = 2;
-        directionaLight.shadow.mapSize.width = 4048;
-        directionaLight.shadow.mapSize.height = 4048;
-        directionaLight.shadow.camera.top = 400;
-        directionaLight.shadow.camera.bottom = -400;
-        directionaLight.shadow.camera.left = -400;
-        directionaLight.shadow.camera.right = 400;
+        directionaLight.shadow.mapSize.width = 2024;
+        directionaLight.shadow.mapSize.height = 2024;
+        directionaLight.shadow.camera.top = 200;
+        directionaLight.shadow.camera.bottom = -200;
+        directionaLight.shadow.camera.left = -200;
+        directionaLight.shadow.camera.right = 200;
         //scene.add(new THREE.CameraHelper(directionaLight.shadow.camera));
         return directionaLight;
     }
