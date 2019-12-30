@@ -4,7 +4,9 @@ arcadeState = {
     up: false,
     down: false,
     left: false,
-    right: false
+    right: false,
+    volumeHigh: false,
+    music: false
 }
 
 class ArcadeAutomat extends THREE.Group {

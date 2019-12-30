@@ -16,7 +16,7 @@ class Soundscape {
     }
 
     addSound(visualObject, path, refDistance = 10, cone = false) {
-
+        
         var sound = new THREE.PositionalAudio(this.audioListener);
 
         this.audioLoader.load(path, function (buffer) {

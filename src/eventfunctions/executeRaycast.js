@@ -11,6 +11,10 @@ function executeRaycast(event) {
 
         if (firstHit.name === "Volume") {
             firstHit.userData.toggleEndPosition();
+            arcadeState.music = !arcadeState.music;
+            window.dispatchEvent(new Event("arcadeStateChanged"));
+
+
         } else if (firstHit.name === "Up" || firstHit.name === "Down" || firstHit.name === "Left" || firstHit.name === "Right") {
             console.log(firstHit.name);
             if (arcadeState.isFlying) {

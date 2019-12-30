@@ -66,7 +66,7 @@ class SpaceshipFromFile extends THREE.Group {
             var body = physics.getBody(this);
             //body.velocity.set(0,0,0);
             if (body.position.y <= 80) {
-                body.position.y += 0.5;
+                body.position.y += 0.3;
             }
 
             if (up && !down) {

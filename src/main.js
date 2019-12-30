@@ -75,6 +75,9 @@ function main() {
     physics.addBox(arcade, 20, 70, 100, 48, 0, 5, 0);
     scene.add(arcade);
 
+    
+    soundscape.addSound(arcade,"src/sound/files/Music.mp3");
+
 
     //Spaceship --> Animate Floating
     window.spaceship = new SpaceshipFromFile();
@@ -84,8 +87,6 @@ function main() {
     spaceship.name = "Ebon Hawk";
     physics.addSphere(spaceship, 0.5, 25);
     scene.add(spaceship);
-
-    soundscape.addSound("src/sound/files/Music.mp3");
 
 
     //Camera
