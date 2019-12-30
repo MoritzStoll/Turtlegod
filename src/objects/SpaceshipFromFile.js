@@ -62,23 +62,38 @@ class SpaceshipFromFile extends THREE.Group {
         }
     }
     move (isFlying = false, up = false, down = false, right = false, left = false) {
+        var speed = 15;
         if (isFlying) {
             var body = physics.getBody(this);
-            //body.velocity.set(0,0,0);
+            var velocity = new THREE.Vector3(0,0,0);
             if (body.position.y <= 80) {
-                body.position.y += 0.3;
+                console.log("Push", body.position.y)
+                body.velocity.set(0,speed,0);
+                //body.rotation.set(0,0,0);
+                body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,0,0), 0);
+                //body.position.y += 0.3;
+            } else {
+                body.velocity.set(0,0,0);
             }
 
             if (up && !down) {
-                body.position.z -= 0.3;
+                body.velocity.set(0,0,-speed)
+                //body.position.z -= 0.3;
             } else if (down && !up){
-                body.position.z += 0.3;
+                body.velocity.set(0,0,speed)
+
+                
+                //body.position.z += 0.3;
             }
     
             if (left && !right) {
-                body.position.x -= 0.3;
+                body.velocity.set(-speed,0,0)
+
+                //body.position.x -= 0.3;
             } else if (right && !left) {
-                body.position.x += 0.3;
+                body.velocity.set(speed,0,0)
+
+//                body.position.x += 0.3;
             }
 
             //console.log("UP: " + up, "Down: " + down, "Left: " + left + "Right: " + right);

@@ -12,9 +12,17 @@ arcadeState = {
 class ArcadeAutomat extends THREE.Group {
     constructor() {
         super();
+        this.uniforms = {
+            colour: { type: "c", value: new THREE.Color(0xffffff) },
+            rows: { type: "f", value: 15},
+            glow: { type: "f", value: 1.0},
+            glowRadius: { type: "f", value: 1.0},
+            charDetail: { type: "f", value: 3.0},
+            speed: { type: "f", value: 10.0},
+            iGlobalTime: { type: "f", value: clock.getDelta(), hidden: 1}
+        };
         this.animations = new Array();
         this.addParts();
-        
         
 
     }
@@ -23,26 +31,36 @@ class ArcadeAutomat extends THREE.Group {
         this.displayCreator();
         this.controllerCreator();
         this.seitenTeilCreator();
+        this.imageCreator();
 
     }
     controllerCreator() {
+        var leatherMap = new THREE.TextureLoader().load('src/images/LeatherInv.jpg');
         var leftControls = new THREE.Group();
         var blendeGeometry = new THREE.BoxGeometry(15, 3, 20);
-        var blendeMaterial = new THREE.MeshLambertMaterial({
+        var blendeMaterial = new THREE.MeshPhongMaterial({
             color: 0x383838
-    
+
         });
+
+        blendeMaterial.bumpMap = leatherMap;
+        blendeMaterial.bumpScale = 0.3;
         var blendeMesh = new THREE.Mesh(blendeGeometry, blendeMaterial);
         blendeMesh.castShadow = true;
         leftControls.position.set(20, 20, 8);
         leftControls.add(blendeMesh);
-        
+
 
         var buttons = new THREE.Group();
-        
-        var buttonMaterial = new THREE.MeshLambertMaterial({
+
+        var buttonMaterial = new THREE.MeshPhongMaterial({
             color: 0xE05353
         });
+
+
+        buttonMaterial.bumpMap = leatherMap;
+        buttonMaterial.bumpScale = 0.3;
+
         //Button Up
         var buttonUpGeometry = new THREE.CylinderGeometry(2, 2, 3, 10, 1, false);
         var buttonUpMesh = new THREE.Mesh(buttonUpGeometry, buttonMaterial);
@@ -71,7 +89,7 @@ class ArcadeAutomat extends THREE.Group {
         buttonRightMesh.position.set(0, 3, -4);
         buttonRightMesh.castShadow = true;
         buttonRightMesh.name = "Right"
-        
+
         //ADD Tweens to buttons
         var speed = 400;
         var buttonUpTweens = {
@@ -79,7 +97,7 @@ class ArcadeAutomat extends THREE.Group {
             UpTween: new TWEEN.Tween(buttonUpMesh.position).to(new THREE.Vector3(buttonUpMesh.position.x,
                 buttonUpMesh.position.y, buttonUpMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
             DownTween: new TWEEN.Tween(buttonUpMesh.position).to(new THREE.Vector3(buttonUpMesh.position.x,
-                    buttonUpMesh.position.y-1.2, buttonUpMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+                buttonUpMesh.position.y - 1.2, buttonUpMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
         }
         buttonUpMesh.userData = buttonUpTweens;
 
@@ -88,37 +106,37 @@ class ArcadeAutomat extends THREE.Group {
             UpTween: new TWEEN.Tween(buttonDownMesh.position).to(new THREE.Vector3(buttonDownMesh.position.x,
                 buttonDownMesh.position.y, buttonDownMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
             DownTween: new TWEEN.Tween(buttonDownMesh.position).to(new THREE.Vector3(buttonDownMesh.position.x,
-                    buttonDownMesh.position.y-1.2, buttonDownMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+                buttonDownMesh.position.y - 1.2, buttonDownMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
         }
         buttonDownMesh.userData = buttonDownTweens;
-        
+
         var buttonLeftTweens = {
             up: true,
             UpTween: new TWEEN.Tween(buttonLeftMesh.position).to(new THREE.Vector3(buttonLeftMesh.position.x,
                 buttonLeftMesh.position.y, buttonLeftMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
             DownTween: new TWEEN.Tween(buttonLeftMesh.position).to(new THREE.Vector3(buttonLeftMesh.position.x,
-                    buttonLeftMesh.position.y-1.2, buttonLeftMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+                buttonLeftMesh.position.y - 1.2, buttonLeftMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
         }
         buttonLeftMesh.userData = buttonLeftTweens;
-        
+
         var buttonRightTweens = {
             up: true,
             UpTween: new TWEEN.Tween(buttonRightMesh.position).to(new THREE.Vector3(buttonRightMesh.position.x,
                 buttonRightMesh.position.y, buttonRightMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out),
             DownTween: new TWEEN.Tween(buttonRightMesh.position).to(new THREE.Vector3(buttonRightMesh.position.x,
-                    buttonRightMesh.position.y-1.2, buttonRightMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
+                buttonRightMesh.position.y - 1.2, buttonRightMesh.position.z), speed).easing(TWEEN.Easing.Quadratic.Out)
         }
         buttonRightMesh.userData = buttonRightTweens;
-        
 
-        
+
+
         //HandleWrapper
         var handleWrapper = new THREE.Group();
         var handle = new THREE.Object3D();
         var handleMaterial = new THREE.MeshLambertMaterial({
-            color: 0x383838            
+            color: 0x383838
         });
-        var handleGeometry = new THREE.CylinderGeometry(1.5,1.5,20,10,1,false);
+        var handleGeometry = new THREE.CylinderGeometry(1.5, 1.5, 20, 10, 1, false);
 
 
 
@@ -128,9 +146,9 @@ class ArcadeAutomat extends THREE.Group {
         handleMesh.castShadow = true;
         //handleWrapper.position.set(20, 20, -15);
         handleWrapper.position.set(0, 20, 0);
-        handle.position.set(20,10,-15);
+        handle.position.set(20, 10, -15);
         handleWrapper.add(handleMesh);
-        handle.rotation.z = -20*DEG_TO_RAD;
+        handle.rotation.z = -20 * DEG_TO_RAD;
         //Kugel
         var sphereGeometry = new THREE.SphereGeometry(3, 16, 16);
         var sphereMesh = new THREE.Mesh(sphereGeometry, buttonMaterial);
@@ -143,9 +161,9 @@ class ArcadeAutomat extends THREE.Group {
         var handleTweens = {
             up: false,
             UpTween: new TWEEN.Tween(handle.rotation).to(new THREE.Vector3(handle.rotation.x,
-                handle.rotation.y, 20*DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out),
+                handle.rotation.y, 20 * DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out),
             DownTween: new TWEEN.Tween(handle.rotation).to(new THREE.Vector3(handle.rotation.x,
-                    handle.rotation.y, -20*DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out)
+                handle.rotation.y, -20 * DEG_TO_RAD), speed).easing(TWEEN.Easing.Quadratic.Out)
         }
         handleMesh.userData = handleTweens;
         sphereMesh.userData = handleTweens;
@@ -169,28 +187,27 @@ class ArcadeAutomat extends THREE.Group {
         volumeMesh.userData = volumeAnimation;
         this.animations.push(volumeAnimation);
 
-
-
-
         leftControls.add(buttons);
         this.add(handle);
         this.add(leftControls);
 
 
     }
-
+   
     displayCreator() {
         //ReflectionMap
         var path = "../../lib/three.js-r109/examples/textures/cube/MilkyWay/";
         var images = [path + "dark-s_px.jpg", path + "dark-s_nx.jpg", path + "dark-s_py.jpg", path + "dark-s_ny.jpg", path + "dark-s_pz.jpg", path + "dark-s_nz.jpg"];
         var cubeTexture = new THREE.CubeTextureLoader().load(images);
         cubeTexture.mapping = THREE.CubeReflectionMapping;
-        var displayMaterial = new THREE.MeshLambertMaterial({
-            color: 0x555555
+        
+     
+        var displayMaterial = new THREE.ShaderMaterial({
+            uniforms : this.uniforms,
+            vertexShader : document.getElementById('matrix.vert').textContent,
+            fragmentShader : document.getElementById('matrix.frag').textContent
         });
-        displayMaterial.envMap = cubeTexture;
-        displayMaterial.combine = THREE.MixOperation;
-        displayMaterial.reflectivity = 0.5;
+
         var displayGeometry = new THREE.BoxGeometry(20, 3, 35)
         var displayMesh = new THREE.Mesh(displayGeometry, displayMaterial);
 
@@ -203,15 +220,42 @@ class ArcadeAutomat extends THREE.Group {
 
         this.add(displayMesh);
     }
-    
+
     seitenTeilCreator() {
         var topGeometry = new THREE.BoxGeometry(35, 10, 39);
-        
+
+
+        //ReflectionMap
+        var path = "../../lib/three.js-r109/examples/textures/cube/MilkyWay/";
+        var images = [path + "dark-s_px.jpg", path + "dark-s_nx.jpg", path + "dark-s_py.jpg", path + "dark-s_ny.jpg", path + "dark-s_pz.jpg", path + "dark-s_nz.jpg"];
+        var cubeTexture = new THREE.CubeTextureLoader().load(images);
+        cubeTexture.mapping = THREE.CubeReflectionMapping;
+
         var sideMaterial = new THREE.MeshLambertMaterial({
-            color: 0x103540
+            color: 0x383838
         });
-        var topMesh = new THREE.Mesh(topGeometry, sideMaterial);
-        topMesh.position.set(-15,50,0);
+        sideMaterial.envMap = cubeTexture;
+        sideMaterial.combine = THREE.MixOperation;
+        sideMaterial.reflectivity = 0.3;
+
+        var topMaterial = new THREE.MeshPhongMaterial({
+            color: 0x383838
+        });
+        topMaterial.envMap = cubeTexture;
+        topMaterial.combine = THREE.MixOperation;
+        topMaterial.reflectivity = 0.3;
+
+
+
+
+
+        var topMesh = new THREE.Mesh(topGeometry, topMaterial);
+        topMesh.position.set(-15, 50, 0);
+
+
+
+
+
         this.add(topMesh);
         var sideleftShape = new THREE.Shape();
         sideleftShape.moveTo(-35, -45);
@@ -252,7 +296,24 @@ class ArcadeAutomat extends THREE.Group {
         siderightMesh.castShadow = true;
         this.add(sideleftMesh);
         this.add(siderightMesh);
-        
+
+    }
+    imageCreator() {
+
+        var frameGeometry = new THREE.BoxGeometry(3, 65, 40);
+        var posterMaterial = new THREE.MeshLambertMaterial({
+            color: 0xffffff
+        });
+        var frameMaterial = new THREE.MeshLambertMaterial({
+            color: 0x383838
+        });
+        posterMaterial.map = new THREE.TextureLoader().load('src/images/sttexture.jpg');
+        var materialArray = [posterMaterial, frameMaterial, frameMaterial, frameMaterial, frameMaterial, frameMaterial];
+
+        var frameMesh = new THREE.Mesh(frameGeometry, materialArray);
+        frameMesh.position.set(30, -12, 0);
+        this.add(frameMesh);
+
     }
     korpusCreator() {
         //Korpus
@@ -273,17 +334,25 @@ class ArcadeAutomat extends THREE.Group {
         var korpusMaterial = new THREE.MeshLambertMaterial({
             color: 0x369C9C
         });
+
+
         var korpusMesh = new THREE.Mesh(korpusGeometry, korpusMaterial);
         korpusMesh.position.z = -20;
 
         //Constructed Solid Geometry - Schlitz
-        var holeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
-        var holeGeometry = new THREE.BoxGeometry(15,20,4);
+        var holeMaterial = new THREE.MeshLambertMaterial({
+            color: 0xffffff
+        });
+        var holeGeometry = new THREE.BoxGeometry(15, 20, 4);
         var holeMesh = new THREE.Mesh(holeGeometry, holeMaterial);
         holeMesh.position.set(20, 20, -15);
 
+
+
         var subtractKorpusMesh = threecsg.subtract(korpusMesh, holeMesh, korpusMaterial);
         subtractKorpusMesh.castShadow = true;
+
+
 
         this.add(subtractKorpusMesh);
 

@@ -66,6 +66,8 @@ function main() {
 
     //Objects in Scene
     scene.add(new Floor(300, 300, 1))
+    window.clock = new THREE.Clock();
+
 
     //ArcadeAutomat
     var arcade = new ArcadeAutomat();
@@ -74,7 +76,7 @@ function main() {
     arcade.castShadow = true;
     physics.addBox(arcade, 20, 70, 100, 48, 0, 5, 0);
     scene.add(arcade);
-
+    console.log(arcade)
     
     soundscape.addSound(arcade,"src/sound/files/Music.mp3");
 
@@ -85,8 +87,9 @@ function main() {
     spaceship.position.y = 40;
     spaceship.scale.set(0.05, 0.05, 0.05);
     spaceship.name = "Ebon Hawk";
-    physics.addSphere(spaceship, 0.5, 25);
+    physics.addSphere(spaceship, 0.5, 18, 0,1,0);
     scene.add(spaceship);
+
 
 
     //Camera
@@ -125,8 +128,7 @@ function main() {
 
     document.getElementById("3d_content").appendChild(renderer.domElement);
 
-    var clock = new THREE.Clock();
-
+    
     function mainLoop() {
 
         stats.begin();
@@ -149,6 +151,8 @@ function main() {
         if (arcadeState.isFlying) {        
             spaceship.move(arcadeState.isFlying, arcadeState.up, arcadeState.down, arcadeState.right, arcadeState.left);
         }
+
+        arcade.uniforms.iGlobalTime.value = clock.getElapsedTime();
         renderer.render(scene, camera);
 
         stats.end();

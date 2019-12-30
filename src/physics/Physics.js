@@ -66,7 +66,6 @@ class Physics {
     }
 
     addBox(visualObject, mass, dimX, dimY, dimZ, offsetX = 0, offsetY = 0, offsetZ = 0) {
-
         var dimension = new CANNON.Vec3(dimX / 2, dimY / 2, dimZ / 2);
         var offset = new CANNON.Vec3(offsetX, offsetY, offsetZ);
 
@@ -102,11 +101,16 @@ class Physics {
         this.addPair(visualObject, body);
     }
 
-    addSphere(visualObject, mass, radius) {
+    addSphere(visualObject, mass, radius, offsetX = 0, offsetY = 0, offsetZ = 0) {
         var body = new CANNON.Body({
-            shape: new CANNON.Sphere(radius),
+            //shape: new CANNON.Sphere(radius),
             mass: mass
         });
+
+        var translation = new CANNON.Vec3(offsetX, offsetY, offsetZ);
+        
+        body.addShape(new CANNON.Sphere(radius),translation);
+        console.log(translation);
         body.position.copy(visualObject.position);
         body.quaternion.copy(visualObject.quaternion);
 
